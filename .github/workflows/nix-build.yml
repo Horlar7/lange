@@ -1,0 +1,10 @@
+on: [push, pull_request]
+name: nix-build
+jobs:
+  nix-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: cachix/install-nix-action@v9
+      - name: nix-build
+        run: "nix-build"
