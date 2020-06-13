@@ -1,1 +1,1 @@
-# lange ![CI](https://github.com/lovesegfault/lange/workflows/nix-ci/badge.svg)
+# lange ![ci](https://github.com/lovesegfault/lange/workflows/ci/badge.svg)
