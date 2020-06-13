@@ -4,7 +4,14 @@ version = "0.1.0"
 authors = ["Bernardo Meurer <bernardo@meurer.org>"]
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+categories = ["command-line-utilities", "development-tools"]
+description = "Quickly enter a dev environment with nix-shell"
+# documentation = "FIXME"
+homepage = "https://github.com/lovesegfault/lange"
+keywords = ["nixos", "nix", "nix-shell", "dev", "environment"]
+license = "BSD-3-Clause"
+readme = "./README.md"
+repository = "https://github.com/lovesegfault/lange"
 
 [dependencies]
 askama = "0.9.0"
