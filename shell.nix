@@ -10,6 +10,7 @@ pkgs.mkShell {
     cargo-udeps
     rust-analyzer
 
+    cachix
     nixpkgs-fmt
     niv
   ];
