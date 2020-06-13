@@ -21,4 +21,5 @@ let
     (self: super: { crate2nix = self.callPackage (sources.crate2nix + "/tools.nix") { }; })
   ];
   nixpkgs = if pkgs == null then sources.nixpkgs else pkgs;
-in import nixpkgs { inherit overlays system; }
+in
+import nixpkgs { inherit overlays system; }
