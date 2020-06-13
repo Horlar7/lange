@@ -1,5 +1,5 @@
 let
-  pkgs = import <nixpkgs> { };
+  pkgs = import ./nix { };
 in
 pkgs.mkShell {
   name = "lange";
@@ -8,9 +8,9 @@ pkgs.mkShell {
     cargo-edit
     cargo-tree
     cargo-udeps
-    rustfmt
     rust-analyzer
 
     nixpkgs-fmt
+    niv
   ];
 }
