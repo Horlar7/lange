@@ -1,5 +1,5 @@
 on: [push, pull_request]
-name: nix-build
+name: nix-ci
 jobs:
   nix-build:
     runs-on: ubuntu-latest
