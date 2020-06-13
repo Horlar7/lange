@@ -1,0 +1,7 @@
+[general]
+default_syntax = "nix"
+
+[[syntax]]
+name = "nix"
+expr_start = "''"
+expr_end = "''"
