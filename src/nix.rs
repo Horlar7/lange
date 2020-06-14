@@ -1,5 +1,5 @@
 #[derive(Clone, Default)]
-pub(crate) struct NixString(String);
+pub struct NixString(String);
 impl NixString {
     pub fn new(s: String) -> Self {
         NixString(s)
@@ -17,12 +17,13 @@ impl<S: AsRef<str>> From<S> for NixString {
 }
 
 #[derive(Clone, Default)]
-pub(crate) struct NixMultiLineString(Vec<String>);
+pub struct NixMultiLineString(Vec<String>);
 impl<'d> NixMultiLineString {
     pub fn new(strings: Vec<String>) -> Self {
         NixMultiLineString(strings)
     }
 }
+
 impl std::fmt::Display for NixMultiLineString {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "''")?;
@@ -34,37 +35,28 @@ impl std::fmt::Display for NixMultiLineString {
         Ok(())
     }
 }
-impl From<Vec<String>> for NixMultiLineString {
-    fn from(v: Vec<String>) -> Self {
-        Self::new(v)
+impl std::ops::Add for NixMultiLineString {
+    type Output = Self;
+    fn add(mut self, mut other: Self) -> Self::Output {
+        self.0.append(&mut other.0);
+        self
     }
 }
-impl From<&[String]> for NixMultiLineString {
-    fn from(v: &[String]) -> Self {
-        v.to_owned().into()
-    }
-}
-impl From<&str> for NixMultiLineString {
-    fn from(s: &str) -> Self {
-        s.split('\n')
-            .map(str::to_string)
-            .collect::<Vec<String>>()
-            .into()
-    }
-}
-impl From<String> for NixMultiLineString {
-    fn from(s: String) -> Self {
-        s.into()
+
+impl<S: Clone + Into<String>> From<&[S]> for NixMultiLineString {
+    fn from(s: &[S]) -> Self {
+        Self::new(s.iter().cloned().map(Into::into).collect())
     }
 }
 
 #[derive(Clone, Default)]
-pub(crate) struct NixList(Vec<String>);
+pub struct NixList(Vec<String>);
 impl<'d> NixList {
     pub fn new(list: Vec<String>) -> Self {
         NixList(list)
     }
 }
+
 impl std::fmt::Display for NixList {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "[")?;
@@ -76,23 +68,46 @@ impl std::fmt::Display for NixList {
         Ok(())
     }
 }
-impl From<&[&str]> for NixList {
-    fn from(v: &[&str]) -> Self {
-        Self::new(v.iter().map(|s| s.to_string()).collect())
+
+impl std::ops::Add for NixList {
+    type Output = Self;
+    fn add(mut self, mut other: Self) -> Self::Output {
+        self.0.append(&mut other.0);
+        self
     }
 }
 
-#[derive(Default, askama::Template, derive_builder::Builder)]
-#[builder(default, setter(into))]
-#[template(path = "shell.nix", escape = "none")]
-pub(crate) struct NixShellTemplate {
-    name: NixString,
-    build_inputs: NixList,
-    shell_hook: NixMultiLineString,
+impl<S: Clone + Into<String>> From<&[S]> for NixList {
+    fn from(s: &[S]) -> Self {
+        Self::new(s.iter().cloned().map(Into::into).collect())
+    }
 }
 
-impl NixShellTemplate {
-    pub fn render(&self) -> String {
-        askama::Template::render(self).unwrap()
+#[derive(Default, askama::Template)]
+#[template(path = "shell.nix", escape = "none")]
+pub struct NixShellTemplate {
+    pub name: NixString,
+    pub build_inputs: NixList,
+    pub shell_hook: NixMultiLineString,
+}
+
+impl std::ops::Add for NixShellTemplate {
+    type Output = Self;
+    fn add(self, other: Self) -> Self::Output {
+        let name = format!("{}+{}", self.name.0, other.name.0).into();
+        Self {
+            name,
+            build_inputs: self.build_inputs + other.build_inputs,
+            shell_hook: self.shell_hook + other.shell_hook,
+        }
+    }
+}
+
+impl std::iter::Sum for NixShellTemplate {
+    fn sum<I>(iter: I) -> Self
+    where
+        I: Iterator<Item = Self>,
+    {
+        iter.fold(Default::default(), |a, b| a + b)
     }
 }

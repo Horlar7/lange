@@ -1,21 +1,31 @@
+mod languages;
 mod nix;
+mod nix_shell;
 
-use nix::NixShellTemplateBuilder;
-use std::io::Write;
-use std::process::Command;
-use tempfile::NamedTempFile;
+use languages::Language;
+use nix_shell::NixShell;
+use structopt::StructOpt;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let rust_shell = NixShellTemplateBuilder::default()
-        .name("Rust")
-        .build_inputs(&["rust-analyzer", "cargo"][..])
-        .shell_hook("echo 'foo'")
-        .build()?
-        .render();
-    let mut tmp_shell_file = NamedTempFile::new()?;
-    tmp_shell_file.write_all(rust_shell.as_bytes())?;
-    Command::new("nix-shell")
-        .arg(tmp_shell_file.path())
-        .status()?;
-    Ok(())
+#[derive(Debug, structopt::StructOpt)]
+#[structopt(name = "lange", about = "Quickly spin up a dev environment")]
+struct Opt {
+    #[structopt(short, long)]
+    pure: bool,
+
+    #[structopt(required = true)]
+    languages: Vec<languages::Language>,
+}
+
+fn main() -> anyhow::Result<()> {
+    let opt = Opt::from_args();
+    let shell = opt
+        .languages
+        .iter()
+        .map(Language::into_shell)
+        .sum::<nix::NixShellTemplate>();
+    let shell = NixShell {
+        pure: opt.pure,
+        template: shell,
+    };
+    shell.enter()
 }
