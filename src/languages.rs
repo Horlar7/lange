@@ -1,14 +1,14 @@
 use crate::nix::NixShellTemplate;
 
-#[derive(Debug, strum_macros::EnumString)]
+#[derive(Clone, Copy, Debug, strum_macros::EnumString)]
 #[strum(serialize_all = "snake_case")]
 pub enum Language {
     Bash,
     Rust,
 }
 
-impl Language {
-    pub fn into_shell(&self) -> NixShellTemplate {
+impl Into<NixShellTemplate> for &Language {
+    fn into(self) -> NixShellTemplate {
         use Language::*;
         match self {
             Bash => NixShellTemplate {
@@ -22,5 +22,11 @@ impl Language {
                 ..Default::default()
             },
         }
+    }
+}
+
+impl Into<NixShellTemplate> for Language {
+    fn into(self) -> NixShellTemplate {
+        (&self).into()
     }
 }

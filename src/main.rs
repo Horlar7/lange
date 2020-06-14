@@ -2,7 +2,6 @@ mod languages;
 mod nix;
 mod nix_shell;
 
-use languages::Language;
 use nix_shell::NixShell;
 use structopt::StructOpt;
 
@@ -21,7 +20,7 @@ fn main() -> anyhow::Result<()> {
     let shell = opt
         .languages
         .iter()
-        .map(Language::into_shell)
+        .map(Into::into)
         .sum::<nix::NixShellTemplate>();
     let shell = NixShell {
         pure: opt.pure,
