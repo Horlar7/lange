@@ -104,10 +104,11 @@ impl std::ops::Add for NixShellTemplate {
 }
 
 impl std::iter::Sum for NixShellTemplate {
-    fn sum<I>(iter: I) -> Self
+    fn sum<I>(mut iter: I) -> Self
     where
         I: Iterator<Item = Self>,
     {
-        iter.fold(Default::default(), |a, b| a + b)
+        let first = iter.next().unwrap_or_default();
+        iter.fold(first, |a, b| a + b)
     }
 }
