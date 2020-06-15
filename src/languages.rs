@@ -8,6 +8,7 @@ pub enum Language {
 }
 
 impl Into<NixShellTemplate> for &Language {
+    #[tracing::instrument]
     fn into(self) -> NixShellTemplate {
         use Language::*;
         match self {

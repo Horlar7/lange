@@ -1,4 +1,4 @@
-#[derive(Clone, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct NixString(String);
 
 impl NixString {
@@ -19,7 +19,7 @@ impl<S: AsRef<str>> From<S> for NixString {
     }
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct NixMultiLineString(Vec<String>);
 impl<'d> NixMultiLineString {
     pub fn new(strings: Vec<String>) -> Self {
@@ -53,7 +53,7 @@ impl<S: Clone + Into<String>> From<&[S]> for NixMultiLineString {
     }
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct NixList(Vec<String>);
 
 impl<'d> NixList {
@@ -88,7 +88,7 @@ impl<S: Clone + Into<String>> From<&[S]> for NixList {
     }
 }
 
-#[derive(Default, askama::Template)]
+#[derive(Debug, Default, askama::Template)]
 #[template(path = "shell.nix", escape = "none")]
 pub struct NixShellTemplate {
     pub name: NixString,
