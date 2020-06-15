@@ -1,15 +1,18 @@
 #[derive(Clone, Default)]
 pub struct NixString(String);
+
 impl NixString {
     pub fn new(s: String) -> Self {
         NixString(s)
     }
 }
+
 impl std::fmt::Display for NixString {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "\"{}\"", self.0)
     }
 }
+
 impl<S: AsRef<str>> From<S> for NixString {
     fn from(s: S) -> Self {
         NixString::new(s.as_ref().to_owned())
@@ -35,6 +38,7 @@ impl std::fmt::Display for NixMultiLineString {
         Ok(())
     }
 }
+
 impl std::ops::Add for NixMultiLineString {
     type Output = Self;
     fn add(mut self, mut other: Self) -> Self::Output {
@@ -51,6 +55,7 @@ impl<S: Clone + Into<String>> From<&[S]> for NixMultiLineString {
 
 #[derive(Clone, Default)]
 pub struct NixList(Vec<String>);
+
 impl<'d> NixList {
     pub fn new(list: Vec<String>) -> Self {
         NixList(list)
